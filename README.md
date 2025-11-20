@@ -33,20 +33,25 @@ This project develops an intelligent machine learning system for **binary soil f
 
 ### Input Features:
 
-| Feature | Description | Unit |
-|---------|-------------|------|
-| **N** | Nitrogen content | kg/ha |
-| **P** | Phosphorus content | kg/ha |
-| **K** | Potassium content | kg/ha |
-| **pH** | Soil pH level | - |
-| **EC** | Electrical Conductivity | dS/m |
-| **OC** | Organic Carbon | % |
-| **S** | Sulfur content | ppm |
-| **Zn** | Zinc content | ppm |
-| **Fe** | Iron content | ppm |
-| **Cu** | Copper content | ppm |
-| **Mn** | Manganese content | ppm |
-| **B** | Boron content | ppm |
+| Attribute | Description             | Type        | Range/Values               |
+| --------- | ----------------------- | ----------- | -------------------------- |
+| N         | Nitrogen                | Numeric     | 6 - 383 kg/ha              |
+| P         | Phosphorus              | Numeric     | 2.9 - 125 kg/ha            |
+| K         | Potassium               | Numeric     | 11 - 887 kg/ha             |
+| pH        | Soil pH                 | Numeric     | 0.9 - 11.15                |
+| EC        | Electrical Conductivity | Numeric     | 0.1 - 0.95 dS/m            |
+| OC        | Organic Carbon          | Numeric     | 0.1 - 24%                  |
+| S         | Sulfur                  | Numeric     | 0.64 - 31 ppm              |
+| Zn        | Zinc                    | Numeric     | 0.07 - 42 ppm              |
+| Fe        | Iron                    | Numeric     | 0.21 - 44 ppm              |
+| Cu        | Copper                  | Numeric     | 0.09 - 3.02 ppm            |
+| Mn        | Manganese               | Numeric     | 0.11 - 31 ppm              |
+| B         | Boron                   | Numeric     | 0.06 - 2.82 ppm            |
+| Output    | Fertility Class         | Categorical | 0 (Infertile), 1 (Fertile) |
+
+-**Total Samples:** 841 (after removing Class 2)
+-**Train Set:** 672 samples (80%)
+-**Test Set:** 169 samples (20%)
 
 **Preprocessing Note:** Original dataset contained 3 classes (0, 1, 2). Class 2 (highly fertile, 39 samples) was removed to create a balanced binary classification problem.
 
@@ -156,14 +161,58 @@ CSV format with columns as above, target column `Output` (0/1).
 
 ## Detailed Performance Metrics and Configuration
 
+### Table 1: Model Performance Comparison
 
-## Key Results (Example)
+| Model           | Test Accuracy | Macro Precision | Macro Recall | Macro F1-Score | ROC-AUC |
+| --------------- | ------------- | --------------- | ------------ | -------------- | ------- |
+| Random Forest   | 0.9290        | 0.9290          | 0.9290       | 0.9288         | 0.9620  |
+| XGBoost (Best)  | 0.9349        | 0.9349          | 0.9348       | 0.9348         | 0.9714  |
+| Voting Ensemble | 0.9290        | 0.9290          | 0.9290       | 0.9288         | 0.9620  |
 
-| Model           | Test Accuracy| Macro F1 | CV Accuracy (5-fold)  |
-|-----------------|--------------|----------|-----------------------|
-| **XGBoost**     | 0.9349       | 0.9348   | 0.9477 ± 0.0069       |
-| Random Forest   | 0.9290       | 0.9288   | 0.9441 ± 0.0132       |
-| Voting Ensemble | 0.9290       | 0.9288   | -                     |
+### Table 2: Cross-Validation Results (5-Fold Stratified)
+
+| Model          | CV Accuracy     | CV Macro F1     | CV ROC-AUC     | Stability (Std Dev) |
+| -------------- | --------------- | --------------- | -------------- | ------------------- |
+| Random Forest  | 0.9441 ± 0.0132 | 0.9440 ± 0.0132 | 0.9625 ± 0.011 | Moderate            |
+| XGBoost (Best) | 0.9477 ± 0.0069 | 0.9476 ± 0.0069 | 0.9723 ± 0.007 | High                |
+
+- Lower standard deviation indicates more stable performance across different data splits.
+
+### Table 4: Engineered Features List
+
+| Feature Category     | Feature Name          | Formula/Description               |
+| -------------------- | --------------------- | --------------------------------- |
+| Nutrient Ratios      | NPK_ratio             | N / (P + K)                       |
+|                      | NP_ratio              | N / P                             |
+|                      | NK_ratio              | N / K                             |
+|                      | PK_ratio              | P / K                             |
+| Interaction Terms    | N_pH_interaction      | N × pH                            |
+|                      | pH_OC_interaction     | pH × OC                           |
+|                      | EC_OC_interaction     | EC × OC                           |
+| Composite Indices    | macronutrient_index   | (N + P + K) / 3                   |
+|                      | micronutrient_index   | (Zn + Fe + Cu + Mn + B) / 5       |
+|                      | total_nutrients       | Sum of all nutrients              |
+| Agronomic Principles | limiting_nutrient     | min(N_norm, P_norm, K_norm)       |
+|                      | nutrient_balance      | Balance score based on NPK ratios |
+| Soil Quality Proxies | soil_quality_proxy    | (OC × pH) / EC                    |
+|                      | CEC_proxy             | OC × 10 + EC × 5                  |
+|                      | base_saturation_proxy | (pH - 4) / (9 - 4)                |
+
+### Table 5: Hyperparameters Used
+
+| Model         | Key Hyperparameters | Values   |
+| ------------- | ------------------- | -------- |
+| Random Forest | n_estimators        | 200      |
+|               | max_depth           | 15       |
+|               | min_samples_split   | 5        |
+|               | class_weight        | balanced |
+|               | random_state        | 42       |
+| XGBoost       | n_estimators        | 200      |
+|               | learning_rate       | 0.05     |
+|               | max_depth           | 5        |
+|               | subsample           | 0.8      |
+|               | colsample_bytree    | 0.8      |
+|               | random_state        | 42       |
 
 - **Feature Importance:** Engineered domain features (N×pH, NK_ratio, etc.) make up >65% model importance.
 
