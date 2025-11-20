@@ -142,7 +142,7 @@ The notebook will output:
 pip install pandas>=1.3.0 numpy>=1.21.0 matplotlib>=3.4.0 seaborn>=0.11.0 scikit-learn>=1.0.0 xgboost>=1.5.0 imbalanced-learn>=0.9.0
 ```
 
-## 🗃️ Input/Output Formats
+## Input/Output Formats
 
 **Input:**  
 CSV format with columns as above, target column `Output` (0/1).
@@ -154,7 +154,10 @@ CSV format with columns as above, target column `Output` (0/1).
 
 ---
 
-## 📈 Key Results (Example)
+## Detailed Performance Metrics and Configuration
+
+
+## Key Results (Example)
 
 | Model           | Test Accuracy| Macro F1 | CV Accuracy (5-fold)  |
 |-----------------|--------------|----------|-----------------------|
@@ -166,7 +169,7 @@ CSV format with columns as above, target column `Output` (0/1).
 
 ---
 
-## 🧪 Method Overview
+## Method Overview
 
 - **Data Preprocessing:** Remove Class 2, stratified split, standard scaling  
 - **Feature Engineering:** 15 new features—ratios, interactions, indices—added to original 12  
@@ -178,7 +181,7 @@ CSV format with columns as above, target column `Output` (0/1).
 
 ---
 
-## 📚 References
+## References
 
 1. Gunasekaran, K., et al. (2025). *Frontiers in Soil Science*, 5, 1652058.
 2. Nwamekwe, C. O., et al. (2025). *GU J Sci, Part A*, 12(1), 36-60.
@@ -186,7 +189,7 @@ CSV format with columns as above, target column `Output` (0/1).
 
 ---
 
-## 💬 Contact
+## Contact
 
 - Email: [pravin267135@gmail.com]
 - GitHub: [https://github.com/22Pravin/]
